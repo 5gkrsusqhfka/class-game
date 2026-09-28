@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>협력의 힘 - 자금 성장 게임</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    max-width: 700px;
+    width: 100%;
+    padding: 40px;
+  }
+
+  h1 {
+    text-align: center;
+    color: #4a4a8a;
+    margin-bottom: 10px;
+    font-size: 28px;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #888;
+    margin-bottom: 30px;
+    font-size: 14px;
+  }
+
+  .info-box {
+    background: #f0f2ff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .info-item {
+    text-align: center;
+  }
+
+  .info-label {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 5px;
+  }
+
+  .info-value {
+    font-size: 22px;
+    font-weight: bold;
+    color: #4a4a8a;
+  }
+
+  .round-display {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+
+  .round-number {
+    font-size: 48px;
+    font-weight: bold;
+    color: #667eea;
+  }
+
+  .round-label {
+    font-size: 14px;
+    color: #999;
+  }
+
+  .pool-amount {
+    text-align: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 25px;
+  }
+
+  .pool-amount .label {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 8px;
+  }
+
+  .pool-amount .amount {
+    font-size: 36px;
+    font-weight: bold;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+  }
+
+  button {
+    flex: 1;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  }
+
+  button:active {
+    transform: translateY(0);
+  }
+
+  .btn-continue {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+  }
+
+  .btn-stop {
+    background: #ff6b6b;
+    color: white;
+  }
+
+  .btn-reset {
+    background: #e0e0e0;
+    color: #666;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+
+  th, td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+  }
+
+  th {
+    background: #f0f2ff;
+    color: #4a4a8a;
+    font-weight: bold;
+  }
+
+  tr:hover {
+    background: #fafafa;
+  }
+
+  .result-screen {
+    display: none;
+    text-align: center;
+  }
+
+  .result-screen.active {
+    display: block;
+  }
+
+  .main-screen.hidden {
+    display: none;
+  }
+
+  .final-amount {
+    font-size: 42px;
+    font-weight: bold;
+    color: #667eea;
+    margin: 15px 0;
+  }
+
+  .final-per-person {
+    background: linear-gradient(135deg, #43e97b, #38f9d7);
+    color: white;
+    border-radius: 16px;
+    padding: 30px;
+    margin: 20px 0;
+  }
+
+  .final-per-person .label {
+    font-size: 16px;
+    opacity: 0.9;
+  }
+
+  .final-per-person .value {
+    font-size: 40px;
+    font-weight: bold;
+    margin-top: 8px;
+  }
+
+  .message-box {
+    background: #fff8e1;
+    border-left: 4px solid #ffc107;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+    text-align: left;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #666;
+  }
+
+  .comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 20px 0;
+  }
+
+  .compare-box {
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .compare-box.solo {
+    background: #ffebee;
+  }
+
+  .compare-box.together {
+    background: #e8f5e9;
+  }
+
+  .compare-box .title {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 8px;
+  }
+
+  .compare-box .num {
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .compare-box.solo .num { color: #e74c3c; }
+  .compare-box.together .num { color: #27ae60; }
+
+  .divider {
+    height: 1px;
+    background: #eee;
+    margin: 20px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  
+  <!-- 메인 게임 화면 -->
+  <div class="main-screen" id="mainScreen">
+    <h1>💰 협력의 힘</h1>
+    <p class="subtitle">함께 기다리면 더 커지는 자금 이야기</p>
+
+    <div class="info-box">
+      <div class="info-item">
+        <div class="info-label">참가자 수</div>
+        <div class="info-value">16명</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">시작 자금</div>
+        <div class="info-value">1,000,000원</div>
+      </div>
+    </div>
+
+    <div class="round-display">
+      <div class="round-number" id="roundNum">0</div>
+      <div class="round-label">/ 6 라운드</div>
+    </div>
+
+    <div class="pool-amount">
+      <div class="label">현재 공동 자금</div>
+      <div class="amount" id="poolAmount">1,000,000원</div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-continue" id="nextBtn" onclick="nextRound()">▶ 다음 라운드 진행</button>
+      <button class="btn-stop" id="stopBtn" onclick="stopAndDistribute()">🤝 지금 분배하기</button>
+    </div>
+
+    <table id="historyTable" style="display:none;">
+      <thead>
+        <tr>
+          <th>라운드</th>
+          <th>생활비 차감 후</th>
+          <th>2배 적용 후</th>
+          <th>1인당 분배 시</th>
+        </tr>
+      </thead>
+      <tbody id="historyBody"></tbody>
+    </table>
+
+    <button class="btn-reset" onclick="resetGame()" style="width:100%;">🔄 처음부터 다시하기</button>
+  </div>
+
+  <!-- 결과 화면 -->
+  <div class="result-screen" id="resultScreen">
+    <h1 id="resultTitle">🎉 최종 결과</h1>
+    
+    <div class="final-amount" id="finalAmount">0원</div>
+    <p style="color:#888; font-size:14px;">최종 공동 자금 (라운드 <span id="finalRound">0</span>에서 종료)</p>
+
+    <div class="final-per-person">
+      <div class="label">16명이 나누면 1인당</div>
+      <div class="value" id="perPersonAmount">0원</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <h3 style="margin-bottom:15px; color:#4a4a8a;">📊 만약 1라운드에 바로 나눴다면?</h3>
+    <div class="comparison">
+      <div class="compare-box solo">
+        <div class="title">1라운드 즉시 독식 시</div>
+        <div class="num">100,000원</div>
+      </div>
+      <div class="compare-box together">
+        <div class="title">지금까지 기다린 결과</div>
+        <div class="num" id="compareResult">0원</div>
+      </div>
+    </div>
+
+    <div class="message-box" id="messageBox"></div>
+
+    <button class="btn-reset" onclick="resetGame()" style="width:100%; margin-top:10px;">🔄 다시 시작하기</button>
+  </div>
+
+</div>
+
+<script>
+  const PARTICIPANTS = 16;
+  const START_AMOUNT = 1000000;
+  const LIVING_COST_PER_PERSON = 10000;
+  const MAX_ROUNDS = 6;
+  const MULTIPLIER = 2;
+
+  let currentRound = 0;
+  let currentPool = START_AMOUNT;
+  let history = [];
+
+  function formatMoney(num) {
+    return Math.round(num).toLocaleString('ko-KR') + '원';
+  }
+
+  function updateDisplay() {
+    document.getElementById('roundNum').textContent = currentRound;
+    document.getElementById('poolAmount').textContent = formatMoney(currentPool);
+
+    if (history.length > 0) {
+      document.getElementById('historyTable').style.display = 'table';
+      const tbody = document.getElementById('historyBody');
+      tbody.innerHTML = '';
+      history.forEach(h => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${h.round}</td>
+          <td>${formatMoney(h.afterCost)}</td>
+          <td>${formatMoney(h.afterMultiply)}</td>
+          <td>${formatMoney(h.perPerson)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    if (currentRound >= MAX_ROUNDS) {
+      document.getElementById('nextBtn').disabled = true;
+      document.getElementById('nextBtn').style.opacity = '0.5';
+      document.getElementById('nextBtn').textContent = '✅ 최대 라운드 도달';
+    }
+  }
+
+  function nextRound() {
+    if (currentRound >= MAX_ROUNDS) return;
+
+    currentRound++;
+    const livingCost = PARTICIPANTS * LIVING_COST_PER_PERSON;
+    const afterCost = currentPool - livingCost;
+    const afterMultiply = afterCost * MULTIPLIER;
+    const perPerson = afterCost / PARTICIPANTS;
+
+    history.push({
+      round: currentRound,
+      afterCost: afterCost,
+      afterMultiply: afterMultiply,
+      perPerson: perPerson
+    });
+
+    if (currentRound >= MAX_ROUNDS) {
+      currentPool = afterCost; // 마지막 라운드는 2배 적용 안하고 바로 분배
+      showResult(true);
+    } else {
+      currentPool = afterMultiply;
+      updateDisplay();
+    }
+  }
+
+  function stopAndDistribute() {
+    if (currentRound === 0) {
+      alert('아직 라운드를 진행하지 않았습니다. 먼저 라운드를 진행해주세요!');
+      return;
+    }
+    showResult(false);
+  }
+
+  function showResult(isMaxRound) {
+    document.getElementById('mainScreen').classList.add('hidden');
+    document.getElementById('resultScreen').classList.add('active');
+
+    const finalPool = currentPool;
+    const perPerson = finalPool / PARTICIPANTS;
+
+    document.getElementById('finalAmount').textContent = formatMoney(finalPool);
+    document.getElementById('finalRound').textContent = currentRound;
+    document.getElementById('perPersonAmount').textContent = formatMoney(perPerson);
+    document.getElementById('compareResult').textContent = formatMoney(perPerson);
+
+    const multiple = (perPerson / 100000).toFixed(1);
+    
+    let title = isMaxRound 
+      ? '🎉 6라운드 완주! 최종 결과' 
+      : `🤝 ${currentRound}라운드에서 분배 결정!`;
+    document.getElementById('resultTitle').textContent = title;
+
+    let message = '';
+    if (perPerson >= 1000000) {
+      message = `🎊 축하합니다! 협력을 통해 원금(100만원)의 <b>${multiple}배</b>인 <b>${formatMoney(perPerson)}</b>를 각자 받게 되었습니다!<br><br>
+      만약 1라운드에서 성급하게 혼자 100,000원(1/16)만 가져갔다면 이렇게 큰 금액을 받지 못했을 것입니다.<br><br>
+      <b>💡 교훈: 협력하고 기다리면 모두가 더 큰 이익을 얻을 수 있습니다.</b>`;
+    } else {
+      message = `현재까지는 1인당 <b>${formatMoney(perPerson)}</b>를 받게 됩니다.<br><br>
+      더 오래 기다렸다면 (최대 6라운드까지) 훨씬 더 큰 금액을 받을 수 있었습니다!<br><br>
+      <b>💡 교훈: 조급하게 멈추기보다 끝까지 기다리는 것이 더 유리할 수 있습니다.</b>`;
+    }
+    document.getElementById('messageBox').innerHTML = message;
+  }
+
+  function resetGame() {
+    currentRound = 0;
+    currentPool = START_AMOUNT;
+    history = [];
+    document.getElementById('mainScreen').classList.remove('hidden');
+    document.getElementById('resultScreen').classList.remove('active');
+    document.getElementById('nextBtn').disabled = false;
+    document.getElementById('nextBtn').style.opacity = '1';
+    document.getElementById('nextBtn').textContent = '▶ 다음 라운드 진행';
+    document.getElementById('historyTable').style.display = 'none';
+    updateDisplay();
+  }
+
+  updateDisplay();
+</script>
+
+</body>
+</html>
